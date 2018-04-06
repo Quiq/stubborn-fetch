@@ -3,7 +3,7 @@ import StubbornFetchError from '../error';
 import 'isomorphic-fetch';
 import fetchMock from 'fetch-mock';
 import get from 'lodash/get';
-import StubbornFetchRequest from '../index';
+import StubbornFetchRequest from '../stubbornFetch';
 
 const getAllPathsInObject = (o: Object, currentPath: string = ''): Array<string> => {
   if (typeof o === 'object') {
