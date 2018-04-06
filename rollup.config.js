@@ -1,16 +1,18 @@
 import babel from 'rollup-plugin-babel';
 import flow from 'rollup-plugin-flow';
 import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
+import pkg from './package.json';
 
 export default {
   input: 'src/index.js',
   output: [
     {
-      file: 'dist/index-cjs.js',
+      file: pkg.main,
       format: 'cjs',
     },
     {
-      file: 'dist/index-es.js',
+      file: pkg.module,
       format: 'es',
     },
   ],
@@ -18,9 +20,15 @@ export default {
     flow({all: true, pretty: true}),
     resolve({
       jsnext: true,
+      preferBuiltins: true,
+      browser: true,
     }),
     babel({
-      exclude: 'node_modules/**', // only transpile our source code
+      exclude: 'node_modules/**',
     }),
+    commonjs(),
   ],
+  moduleContext: {
+    [require.resolve('whatwg-fetch')]: 'window',
+  },
 };

@@ -1,8 +1,10 @@
 {
   "name": "stubborn-fetch",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Fetch wrapper with built in retry",
-  "main": "dist/index-es.js",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "jsnext:main": "dist/index.es.js",
   "scripts": {
     "build": "./node_modules/.bin/rollup -c",
     "flow": "./node_modules/.bin/flow",
@@ -61,6 +63,7 @@
     "prettier": "^1.11.0",
     "rollup": "^0.57.1",
     "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-flow": "^1.1.1",
     "rollup-plugin-node-resolve": "^3.3.0"
   }
