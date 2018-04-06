@@ -9,7 +9,8 @@
     "jest": "./node_modules/.bin/jest --watch --colors",
     "lint": "node ./node_modules/.bin/eslint src/",
     "test":
-      "./node_modules/.bin/flow && ./node_modules/.bin/jest && node ./node_modules/eslint/bin/eslint.js src/ --quiet"
+      "./node_modules/.bin/flow && ./node_modules/.bin/jest && node ./node_modules/eslint/bin/eslint.js src/ --quiet",
+    "precommit": "lint-staged"
   },
   "lint-staged": {
     "src/**/*.js": ["prettier --write", "git add"]
