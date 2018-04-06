@@ -1,6 +1,6 @@
 {
   "name": "stubborn-fetch",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Fetch wrapper with built in retry",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -10,6 +10,7 @@
     "flow": "./node_modules/.bin/flow",
     "jest": "./node_modules/.bin/jest --watch --colors",
     "lint": "node ./node_modules/.bin/eslint src/",
+    "prepublish": "npm run build",
     "test":
       "./node_modules/.bin/flow && ./node_modules/.bin/jest && node ./node_modules/eslint/bin/eslint.js src/ --quiet",
     "precommit": "lint-staged"
@@ -66,5 +67,6 @@
     "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-flow": "^1.1.1",
     "rollup-plugin-node-resolve": "^3.3.0"
-  }
+  },
+  "files": ["dist"]
 }

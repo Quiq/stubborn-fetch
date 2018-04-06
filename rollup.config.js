@@ -18,13 +18,11 @@ export default {
   ],
   plugins: [
     flow({all: true, pretty: true}),
-    resolve({
-      jsnext: true,
-      preferBuiltins: true,
-      browser: true,
-    }),
     babel({
       exclude: 'node_modules/**',
+    }),
+    resolve({
+      browser: true,
     }),
     commonjs(),
   ],
