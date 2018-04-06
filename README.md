@@ -1,6 +1,6 @@
 # Stubborn Fetch
 
-An agnostic fetch library with built in retry
+Fetch wrapper with built in retry
 
 ---
 
