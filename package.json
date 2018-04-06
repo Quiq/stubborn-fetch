@@ -13,7 +13,7 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "src/**/*.js": ["prettier --write", "git add"]
+    "src/**/*.js": ["./node_modules/.bin/prettier --write", "git add"]
   },
   "pre-commit": "lint-staged",
   "repository": {
