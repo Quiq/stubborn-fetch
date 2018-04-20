@@ -97,6 +97,12 @@ number;
 number;
 ```
 
+#### `unretryableStatusCodes` - An array of status code numbers for which we will never retry a request, even if it's above the `minimumStatusCodeForRetry`.
+
+```js
+Array<number>;
+```
+
 #### `retryOnNetworkFailure` - Whether we should retry a request when it fails due to a network issue, i.e. we did not get any response from server.
 
 ```js

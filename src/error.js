@@ -1,20 +1,29 @@
-export function StubbornFetchError(type: string, message: ?string, data: Object = {}) {
-  this.type = type;
-  this.message = message || type;
-  this.stack = Error().stack;
-  this.data = data;
+// @flow
+import ExtendableError from 'extendable-error-class';
+
+export class StubbornFetchError extends ExtendableError {
+  data: {
+    response?: Response,
+    errorLimit: ?number,
+    underlyingError?: Error,
+  };
+  type: string;
+
+  static types = {
+    TIMEOUT: 'Timeout',
+    MAX_ERROS_EXCEEDED: 'Max_Errors_Exceeded',
+    NETWORK_ERROR: 'Network',
+    STUBBORN_FETCH_DISABLED: 'Stubborn_Fetch_Disabled',
+    HTTP_ERROR: 'HTTP',
+    RATE_LIMITED: 'Rate_Limited',
+  };
+
+  constructor(type: string, message: ?string, data: Object = {}) {
+    super(message || type);
+    this.type = type;
+    this.data = data;
+  }
 }
-StubbornFetchError.prototype = Object.create(Error.prototype);
-StubbornFetchError.prototype.name = 'StubbornFetchError';
-StubbornFetchError.prototype.constructor = StubbornFetchError;
-StubbornFetchError.types = {
-  TIMEOUT: 'Timeout',
-  MAX_ERROS_EXCEEDED: 'Max_Errors_Exceeded',
-  NETWORK_ERROR: 'Network',
-  STUBBORN_FETCH_DISABLED: 'Stubborn_Fetch_Disabled',
-  HTTP_ERROR: 'HTTP',
-  RATE_LIMITED: 'Rate_Limited',
-};
 
 export const ErrorFactory = {
   TIMEOUT: () => new StubbornFetchError(StubbornFetchError.types.TIMEOUT),

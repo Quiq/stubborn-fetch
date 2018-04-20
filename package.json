@@ -12,33 +12,44 @@
     "jest": "./node_modules/.bin/jest --watch --colors",
     "lint": "node ./node_modules/.bin/eslint src/",
     "prepublish": "npm run build",
-    "test":
-      "./node_modules/.bin/flow && ./node_modules/.bin/jest && node ./node_modules/eslint/bin/eslint.js src/ --quiet",
+    "test": "./node_modules/.bin/flow && ./node_modules/.bin/jest && node ./node_modules/eslint/bin/eslint.js src/ --quiet",
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "src/**/*.js": ["./node_modules/.bin/prettier --write", "git add"]
+    "src/**/*.js": [
+      "./node_modules/.bin/prettier --write",
+      "git add"
+    ]
   },
   "pre-commit": "lint-staged",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Quiq/stubborn-fetch.git"
   },
-  "keywords": ["fetch", "retry"],
+  "keywords": [
+    "fetch",
+    "retry"
+  ],
   "author": "Quiq",
   "license": "MIT",
   "jest": {
-    "moduleDirectories": ["src", "node_modules"],
+    "moduleDirectories": [
+      "src",
+      "node_modules"
+    ],
     "testEnvironmentOptions": {
       "resources": "usable"
     },
-    "setupFiles": ["./jest.setup.js"]
+    "setupFiles": [
+      "./jest.setup.js"
+    ]
   },
   "bugs": {
     "url": "https://github.com/Quiq/stubborn-fetch/issues"
   },
   "homepage": "https://github.com/Quiq/stubborn-fetch#readme",
   "dependencies": {
+    "extendable-error-class": "0.1.1",
     "isomorphic-fetch": "2.2.1"
   },
   "devDependencies": {
@@ -69,5 +80,7 @@
     "rollup-plugin-flow": "^1.1.1",
     "rollup-plugin-node-resolve": "^3.3.0"
   },
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }
