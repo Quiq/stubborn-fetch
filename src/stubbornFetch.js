@@ -16,6 +16,7 @@ const TimingFunctions = {
  * @property totalRequestTimeLimit - The time limit across all retries of this request, after which the request will fail.
  * @property retries - How many times to attempt a request.
  * @property minimumStatusCodeForRetry - The lowest HTTP status code for which we will retry a request.
+ * @property unretryableStatusCodes - An array of status code numbers for which we will never retry a request, even if it's above the `minimumStatusCodeForRetry`.
  * @property retryOnNetworkFailure - Whether we should retry a request when it fails due to a network issue, i.e. we did not get any response from server.
  * @property maxErrors - The maximum global error count we will tolerate across ALL requests. After this is hit, NO future requests will be sent.
  * @property onError - A function that will be called when a request attempt fails.
@@ -29,6 +30,7 @@ export type StubbornFetchRequestOptions = {
   totalRequestTimeLimit?: number,
   retries: number,
   minimumStatusCodeForRetry: number,
+  unretryableStatusCodes: Array<number>,
   retryOnNetworkFailure: boolean,
   maxErrors?: number,
   onError?: (error: StubbornFetchError) => void,
@@ -59,6 +61,7 @@ class StubbornFetchRequest {
     debug: false,
     retries: 3,
     minimumStatusCodeForRetry: 400,
+    unretryableStatusCodes: [401, 422],
     retryOnNetworkFailure: false,
   };
 
@@ -129,16 +132,14 @@ class StubbornFetchRequest {
       case 'Network':
         errorIsRetryable = this.options.retryOnNetworkFailure;
         break;
-      case 'HTTP':
-        switch (error.data.response.status) {
-          case 401:
-          case 422:
-            errorIsRetryable = false;
-            break;
-          default:
-            errorIsRetryable = error.data.response.status >= this.options.minimumStatusCodeForRetry;
-        }
+      case 'HTTP': {
+        const status = error.data.response && error.data.response.status;
+        errorIsRetryable =
+          typeof status === 'number' &&
+          !this.options.unretryableStatusCodes.includes(status) &&
+          status >= this.options.minimumStatusCodeForRetry;
         break;
+      }
       default:
         errorIsRetryable = false;
         break;
@@ -210,28 +211,36 @@ class StubbornFetchRequest {
     }
 
     // Error-specific logic
-    switch (e.data.response.status) {
-      case 401:
-        this._log('warn', '401 received', {response: e.data.response});
-        break;
-      case 429:
-        this._log('warn', 'rate limited', {response: e.data.response});
+    if (e.type === 'HTTP' && e.data.response) {
+      switch (e.data.response.status) {
+        case 401:
+          this._log('warn', '401 received', {response: e.data.response});
+          break;
+        case 429:
+          this._log('warn', 'rate limited', {response: e.data.response});
 
-        // Adjust next retry time if response headers give us some hints
-        if (e.data.response.headers.get('Retry-After')) {
-          StubbornFetchRequest.rateLimitedUntil =
-            Date.now() + parseInt(e.data.response.headers.get('Retry-After'), 10) * 1000;
-          // Does this push us beyond the time limit?
+          // Adjust next retry time if response headers give us some hints
           if (
-            this.options.totalRequestTimeLimit &&
-            StubbornFetchRequest.rateLimitedUntil - this.startTime >
-              this.options.totalRequestTimeLimit
+            e.data.response &&
+            e.data.response.headers &&
+            e.data.response.headers.get('Retry-After')
           ) {
-            this.error = ErrorFactory.RATE_LIMITED();
-            this.rejectImmediately(this.error);
+            StubbornFetchRequest.rateLimitedUntil =
+              // $FlowIssue - We've already confirmed that headers object exists
+              Date.now() + parseInt(e.data.response.headers.get('Retry-After'), 10) * 1000;
+
+            // Does this push us beyond the time limit?
+            if (
+              this.options.totalRequestTimeLimit &&
+              StubbornFetchRequest.rateLimitedUntil - this.startTime >
+                this.options.totalRequestTimeLimit
+            ) {
+              this.error = ErrorFactory.RATE_LIMITED();
+              this.rejectImmediately(this.error);
+            }
           }
-        }
-        break;
+          break;
+      }
     }
   }
 
