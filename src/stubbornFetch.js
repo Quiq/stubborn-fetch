@@ -85,7 +85,7 @@ class StubbornFetchRequest {
     this.error =
       typeof this.options.maxErrors === 'number' &&
       StubbornFetchRequest.globalErrorCount >= this.options.maxErrors
-        ? ErrorFactory.MAX_ERRORS_EXCEEDED(this.options.maxErrors)
+        ? ErrorFactory.MAX_ERRORS_EXCEEDED(this.url, this.fetchRequest, this.options.maxErrors)
         : null;
   }
 
@@ -109,7 +109,7 @@ class StubbornFetchRequest {
   _startRequestTimer() {
     if (this.options.totalRequestTimeLimit) {
       this.requestTimer = setTimeout(() => {
-        this.error = ErrorFactory.TIMEOUT();
+        this.error = ErrorFactory.TIMEOUT(this.url, this.fetchRequest);
         this.rejectImmediately(this.error);
         this._log('warn', 'time limit reached', {request: this._getSanitizedRequest()});
       }, this.options.totalRequestTimeLimit);
@@ -153,7 +153,7 @@ class StubbornFetchRequest {
   _requestGuard() {
     // Is StubbornFetch disabled?
     if (!StubbornFetchRequest.enabled) {
-      throw ErrorFactory.STUBBORN_FETCH_DISABLED();
+      throw ErrorFactory.STUBBORN_FETCH_DISABLED(this.url, this.fetchRequest);
     }
 
     // Has global error limit been reached?
@@ -161,7 +161,11 @@ class StubbornFetchRequest {
       typeof this.options.maxErrors === 'number' &&
       StubbornFetchRequest.globalErrorCount > this.options.maxErrors
     ) {
-      this.error = ErrorFactory.MAX_ERRORS_EXCEEDED(this.options.maxErrors);
+      this.error = ErrorFactory.MAX_ERRORS_EXCEEDED(
+        this.url,
+        this.fetchRequest,
+        this.options.maxErrors,
+      );
     }
 
     // Has current request permanently failed already?
@@ -207,7 +211,11 @@ class StubbornFetchRequest {
       typeof this.options.maxErrors === 'number' &&
       StubbornFetchRequest.globalErrorCount >= this.options.maxErrors
     ) {
-      this.error = ErrorFactory.MAX_ERRORS_EXCEEDED(this.options.maxErrors);
+      this.error = ErrorFactory.MAX_ERRORS_EXCEEDED(
+        this.url,
+        this.fetchRequest,
+        this.options.maxErrors,
+      );
     }
 
     // Error-specific logic
@@ -235,7 +243,7 @@ class StubbornFetchRequest {
               StubbornFetchRequest.rateLimitedUntil - this.startTime >
                 this.options.totalRequestTimeLimit
             ) {
-              this.error = ErrorFactory.RATE_LIMITED();
+              this.error = ErrorFactory.RATE_LIMITED(this.url, this.fetchRequest);
               this.rejectImmediately(this.error);
             }
           }
@@ -261,7 +269,7 @@ class StubbornFetchRequest {
     try {
       response = await fetch(this.url, this.fetchRequest);
     } catch (networkError) {
-      const e = ErrorFactory.NETWORK_ERROR(networkError);
+      const e = ErrorFactory.NETWORK_ERROR(this.url, this.fetchRequest, networkError);
       this._handleError(e);
       throw this.error || e;
     }
@@ -275,7 +283,7 @@ class StubbornFetchRequest {
     }
 
     /******** Request FAILURE :( **********/
-    const e = ErrorFactory.HTTP_ERROR(response);
+    const e = ErrorFactory.HTTP_ERROR(this.url, this.fetchRequest, response);
     this._handleError(e);
 
     // If there is already an error defined on this whole request,

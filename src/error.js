@@ -1,12 +1,16 @@
 // @flow
 import ExtendableError from 'extendable-error-class';
 
+type ErrorData = {
+  url: string,
+  fetchRequest: Object,
+  response?: Response,
+  errorLimit?: number,
+  underlyingError?: Error,
+};
+
 export class StubbornFetchError extends ExtendableError {
-  data: {
-    response?: Response,
-    errorLimit: ?number,
-    underlyingError?: Error,
-  };
+  data: ErrorData;
   type: string;
 
   static types = {
@@ -18,7 +22,7 @@ export class StubbornFetchError extends ExtendableError {
     RATE_LIMITED: 'Rate_Limited',
   };
 
-  constructor(type: string, message: ?string, data: Object = {}) {
+  constructor(type: string, data: ErrorData, message: ?string) {
     super(message || type);
     this.type = type;
     this.data = data;
@@ -26,14 +30,18 @@ export class StubbornFetchError extends ExtendableError {
 }
 
 export const ErrorFactory = {
-  TIMEOUT: () => new StubbornFetchError(StubbornFetchError.types.TIMEOUT),
-  MAX_ERRORS_EXCEEDED: (errorLimit: number) =>
-    new StubbornFetchError('Max_Errors_Exceeded', null, {errorLimit}),
-  NETWORK_ERROR: (underlyingError: Error) =>
-    new StubbornFetchError('Network', null, {underlyingError}),
-  STUBBORN_FETCH_DISABLED: () => new StubbornFetchError('Stubborn_Fetch_Disabled'),
-  HTTP_ERROR: (response: Response) => new StubbornFetchError('HTTP', null, {response}),
-  RATE_LIMITED: () => new StubbornFetchError('Rate_Limited'),
+  TIMEOUT: (url: string, fetchRequest: Object) =>
+    new StubbornFetchError(StubbornFetchError.types.TIMEOUT, {url, fetchRequest}),
+  MAX_ERRORS_EXCEEDED: (url: string, fetchRequest: Object, errorLimit: number) =>
+    new StubbornFetchError('Max_Errors_Exceeded', {errorLimit, url, fetchRequest}),
+  NETWORK_ERROR: (url: string, fetchRequest: Object, underlyingError: Error) =>
+    new StubbornFetchError('Network', {underlyingError, url, fetchRequest}),
+  STUBBORN_FETCH_DISABLED: (url: string, fetchRequest: Object) =>
+    new StubbornFetchError('Stubborn_Fetch_Disabled', {url, fetchRequest}),
+  HTTP_ERROR: (url: string, fetchRequest: Object, response: Response) =>
+    new StubbornFetchError('HTTP', {response, url, fetchRequest}),
+  RATE_LIMITED: (url: string, fetchRequest: Object) =>
+    new StubbornFetchError('Rate_Limited', {url, fetchRequest}),
 };
 
 export default StubbornFetchError;
