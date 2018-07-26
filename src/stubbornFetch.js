@@ -100,18 +100,11 @@ class StubbornFetchRequest {
     }
   }
 
-  _getSanitizedRequest(): Object {
-    const req = Object.assign({}, this.fetchRequest);
-    delete req.headers;
-    return req;
-  }
-
   _startRequestTimer() {
     if (this.options.totalRequestTimeLimit) {
       this.requestTimer = setTimeout(() => {
         this.error = ErrorFactory.TIMEOUT(this.url, this.fetchRequest);
         this.rejectImmediately(this.error);
-        this._log('warn', 'time limit reached', {request: this._getSanitizedRequest()});
       }, this.options.totalRequestTimeLimit);
     }
   }
