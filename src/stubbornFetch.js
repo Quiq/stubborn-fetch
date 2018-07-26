@@ -89,7 +89,7 @@ class StubbornFetchRequest {
         : null;
   }
 
-  _log(level: 'error' | 'warn' | 'info' | 'log' | 'log', message: string, data: ?Object) {
+  _log(level: 'error' | 'warn' | 'info' | 'debug' | 'log', message: string, data: ?Object) {
     const log = this.logger[level] || this.logger.log;
     const method = (this.fetchRequest && this.fetchRequest.method) || 'get';
     const logString = `${message.toUpperCase()}: [${method.toUpperCase()} ${this.url}]`;
@@ -192,7 +192,7 @@ class StubbornFetchRequest {
     );
     return new Promise(resolve => {
       if (delay > 0) {
-        this._log('info', `delay retry for ${delay} ms`);
+        this._log('debug', `delay retry for ${delay} ms`);
       }
       window.setTimeout(resolve, delay);
     });
@@ -311,7 +311,7 @@ class StubbornFetchRequest {
 
       this._runRequestLoop()
         .then((response: Response) => {
-          this._log('info', 'success', {response});
+          this._log('debug', 'success', {response});
           resolve(response);
         })
         .catch((error: StubbornFetchError) => {
