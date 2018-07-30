@@ -324,7 +324,7 @@ class StubbornFetchRequest {
             clearTimeout(this.requestTimer);
           }
         });
-    }).then;
+    });
   }
 }
 
