@@ -255,7 +255,7 @@ class StubbornFetchRequest {
     await this._delayIfNeeded();
 
     // Check for error again, in case some condition changed while we were delaying
-    // For example, another request may have pushed over the totalRequestTimeLimit limit
+    // For example, we might now be over the totalRequestTimeLimit limit
     this._requestGuard();
 
     let response;
@@ -311,7 +311,7 @@ class StubbornFetchRequest {
 
       this._runRequestLoop()
         .then((response: Response) => {
-          this._log('debug', 'success', {response});
+          this._log('info', 'success', {response});
           resolve(response);
         })
         .catch((error: StubbornFetchError) => {
@@ -324,7 +324,7 @@ class StubbornFetchRequest {
             clearTimeout(this.requestTimer);
           }
         });
-    });
+    }).then;
   }
 }
 
