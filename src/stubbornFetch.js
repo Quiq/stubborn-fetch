@@ -311,7 +311,6 @@ class StubbornFetchRequest {
 
       this._runRequestLoop()
         .then((response: Response) => {
-          this._log('info', 'success', {response});
           resolve(response);
         })
         .catch((error: StubbornFetchError) => {
