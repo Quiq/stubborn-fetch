@@ -234,9 +234,10 @@ class StubbornFetchRequest {
             if (
               this.options.totalRequestTimeLimit &&
               StubbornFetchRequest.rateLimitedUntil - this.startTime >
-                this.options.totalRequestTimeLimit
+                this.options.totalRequestTimeLimit &&
+              e.data.response
             ) {
-              this.error = ErrorFactory.RATE_LIMITED(this.url, this.fetchRequest);
+              this.error = ErrorFactory.RATE_LIMITED(this.url, this.fetchRequest, e.data.response);
               this.rejectImmediately(this.error);
             }
           }

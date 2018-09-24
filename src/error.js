@@ -29,19 +29,69 @@ export class StubbornFetchError extends ExtendableError {
   }
 }
 
+const persistResponse = (response: Response): Response =>
+  (({
+    headers: response.headers,
+    ok: response.ok,
+    redirected: response.redirected,
+    status: response.status,
+    statusText: response.statusText,
+    type: response.type,
+    url: response.url,
+    bodyUsed: response.bodyUsed,
+  }: any): Response);
+
+const generateResponseObject = (statusText: string, url: string): Response =>
+  (({
+    headers: {},
+    ok: false,
+    redirected: undefined,
+    status: 0,
+    statusText,
+    type: 'error',
+    url,
+    bodyUsed: false,
+  }: any): Response);
+
 export const ErrorFactory = {
   TIMEOUT: (url: string, request: Object) =>
-    new StubbornFetchError(StubbornFetchError.types.TIMEOUT, {url, request}),
+    new StubbornFetchError(StubbornFetchError.types.TIMEOUT, {
+      url,
+      request,
+      response: generateResponseObject(StubbornFetchError.types.TIMEOUT, url),
+    }),
   MAX_ERRORS_EXCEEDED: (url: string, request: Object, errorLimit: number) =>
-    new StubbornFetchError('Max_Errors_Exceeded', {errorLimit, url, request}),
+    new StubbornFetchError(StubbornFetchError.types.MAX_ERROS_EXCEEDED, {
+      errorLimit,
+      url,
+      request,
+      response: generateResponseObject(StubbornFetchError.types.MAX_ERROS_EXCEEDED, url),
+    }),
   NETWORK_ERROR: (url: string, request: Object, underlyingError: Error) =>
-    new StubbornFetchError('Network', {underlyingError, url, request}),
+    new StubbornFetchError(StubbornFetchError.types.NETWORK_ERROR, {
+      underlyingError,
+      url,
+      request,
+      response: generateResponseObject(StubbornFetchError.types.NETWORK_ERROR, url),
+    }),
   STUBBORN_FETCH_DISABLED: (url: string, request: Object) =>
-    new StubbornFetchError('Stubborn_Fetch_Disabled', {url, request}),
+    new StubbornFetchError(StubbornFetchError.types.STUBBORN_FETCH_DISABLED, {
+      url,
+      request,
+      response: generateResponseObject(StubbornFetchError.types.STUBBORN_FETCH_DISABLED, url),
+    }),
   HTTP_ERROR: (url: string, request: Object, response: Response) =>
-    new StubbornFetchError('HTTP', {response, url, request}),
-  RATE_LIMITED: (url: string, request: Object) =>
-    new StubbornFetchError('Rate_Limited', {url, request}),
+    new StubbornFetchError(StubbornFetchError.types.HTTP_ERROR, {
+      url,
+      request,
+      response: persistResponse(response),
+    }),
+  RATE_LIMITED: (url: string, request: Object, response: Response) =>
+    new StubbornFetchError(StubbornFetchError.types.RATE_LIMITED, {
+      url,
+      request,
+      response: persistResponse(response),
+    }),
 };
 
 export default StubbornFetchError;
