@@ -29,18 +29,6 @@ export class StubbornFetchError extends ExtendableError {
   }
 }
 
-const persistResponse = (response: Response): Response =>
-  (({
-    headers: response.headers,
-    ok: response.ok,
-    redirected: response.redirected,
-    status: response.status,
-    statusText: response.statusText,
-    type: response.type,
-    url: response.url,
-    bodyUsed: response.bodyUsed,
-  }: any): Response);
-
 const generateResponseObject = (statusText: string, url: string): Response =>
   (({
     headers: {},
@@ -84,13 +72,13 @@ export const ErrorFactory = {
     new StubbornFetchError(StubbornFetchError.types.HTTP_ERROR, {
       url,
       request,
-      response: persistResponse(response),
+      response,
     }),
   RATE_LIMITED: (url: string, request: Object, response: Response) =>
     new StubbornFetchError(StubbornFetchError.types.RATE_LIMITED, {
       url,
       request,
-      response: persistResponse(response),
+      response,
     }),
 };
 
