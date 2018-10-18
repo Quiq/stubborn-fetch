@@ -130,7 +130,8 @@ class StubbornFetchRequest {
         errorIsRetryable =
           typeof status === 'number' &&
           !this.options.unretryableStatusCodes.includes(status) &&
-          status >= this.options.minimumStatusCodeForRetry;
+          // Always retry 429's (respecting Retry-After). To disable this, add 429 to `unretryableStatusCodes` option.
+          (status === 429 || status >= this.options.minimumStatusCodeForRetry);
         break;
       }
       default:
