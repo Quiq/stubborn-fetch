@@ -1,6 +1,6 @@
 {
   "name": "stubborn-fetch",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Fetch wrapper with built in retry",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -83,5 +83,9 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "resolutions": {
+    "minimist": "1.2.2",
+    "mem": "4.0.0"
+  }
 }
