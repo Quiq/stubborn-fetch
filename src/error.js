@@ -26,6 +26,10 @@ export class StubbornFetchError extends ExtendableError {
     super(message || type);
     this.type = type;
     this.data = data;
+
+    // Must be set after super() since ExtendableError sets the name to the constructor's
+    // name but the constructor's name gets minimized for production and is of no use.
+    this.name = 'StubbornFetchError';
   }
 }
 
