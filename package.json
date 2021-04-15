@@ -1,6 +1,6 @@
 {
   "name": "stubborn-fetch",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Fetch wrapper with built in retry",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -51,7 +51,7 @@
   "homepage": "https://github.com/Quiq/stubborn-fetch#readme",
   "dependencies": {
     "extendable-error-class": "0.1.1",
-    "isomorphic-fetch": "2.2.1"
+    "isomorphic-fetch": "3.0.0"
   },
   "devDependencies": {
     "ajv": "^6.4.0",
@@ -71,7 +71,7 @@
     "fetch-mock": "^6.3.0",
     "flow-bin": "^0.69.0",
     "husky": "^0.14.3",
-    "jest": "^22.4.0",
+    "jest": "^26.6.3",
     "lint-staged": "^6.0.0",
     "lodash": "^4.17.5",
     "prettier": "^1.11.0",
